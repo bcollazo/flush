@@ -11,12 +11,11 @@ MAX_CSV_ROWS = 10000
 DELIMITER = '\t'
 
 
-def flush(bucket, part_num, records):
+def flush(bucket, records, now, part_num):
     """Write CSV and upload to S3"""
     if len(records) == 0:
         return
 
-    now = datetime.now(timezone.utc).isoformat()
     key = '{}.{}.tsv'.format(now, part_num)
     print('Flushing {} rows to {}'.format(len(records), key))
 
@@ -46,6 +45,8 @@ def main():
     tablename = args.tablename
 
     bucket = boto3.resource('s3').Bucket(args.bucket)
+    now = datetime.now(timezone.utc).isoformat()
+    print('Saving CSVs under the {} S3 key'.format(now))
 
     part_num = 0
     accumulated = []
@@ -64,13 +65,13 @@ def main():
             while row is not None:
                 accumulated.append(row)
                 if len(accumulated) >= MAX_CSV_ROWS:
-                    flush(bucket, part_num, accumulated)
+                    flush(bucket, accumulated, now, part_num)
                     accumulated = []
                     part_num += 1
 
                 row = cur.fetchone()
 
-            flush(bucket, part_num, accumulated)
+            flush(bucket, accumulated, now, part_num)
 
             if args.truncate:
                 print('TRUNCATE-ing table {}'.format(tablename))

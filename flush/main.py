@@ -13,6 +13,9 @@ DELIMITER = '\t'
 
 def flush(bucket, part_num, records):
     """Write CSV and upload to S3"""
+    if len(records) == 0:
+        return
+
     now = datetime.now(timezone.utc).isoformat()
     key = '{}.{}.tsv'.format(now, part_num)
     print('Flushing {} rows to {}'.format(len(records), key))
@@ -32,6 +35,13 @@ def main():
         'dsn', help='PostgreSQL DSN (e.g. postgresql://localhost:5432/mydb)')
     parser.add_argument('tablename', help='Name of table to flush')
     parser.add_argument('bucket', help='AWS S3 bucket name')
+    parser.add_argument(
+        '--truncate',
+        action='store_true',
+        default=False,
+        help='Whether to TRUNCATE table after finishing. THIS IS A DESTRUCTIVE '
+        'OPERATION, SO WE FORCEFULLY ASK FOR IT. Not including this, will make '
+        'tool behave like a backup utility (will just export CSVs).')
     args = parser.parse_args()
     tablename = args.tablename
 
@@ -40,6 +50,7 @@ def main():
     part_num = 0
     accumulated = []
     with psycopg2.connect(args.dsn) as conn:
+        conn.autocommit = False
         with conn.cursor() as cur:
             cur.execute('SELECT tablename FROM pg_catalog.pg_tables')
             tables = set(i[0] for i in cur.fetchall())
@@ -60,5 +71,10 @@ def main():
                 row = cur.fetchone()
 
             flush(bucket, part_num, accumulated)
+
+            if args.truncate:
+                print('TRUNCATE-ing table {}'.format(tablename))
+                cur.execute('TRUNCATE {}'.format(tablename))
+        conn.commit()
 
     print('Done.')

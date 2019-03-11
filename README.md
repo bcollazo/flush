@@ -12,5 +12,5 @@ Then:
 
 ```
 pip install -e .
-flush postgres://localhost:5432/mydatabase tablename mybucket
+flush postgres://localhost:5432/mydatabase tablename mybucket --truncate
 ```

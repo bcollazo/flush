@@ -1,4 +1,4 @@
-# flush (WORK IN PROGESS)
+# flush
 
 Archive PostgreSQL tables to S3.
 

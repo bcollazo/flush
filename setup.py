@@ -9,6 +9,9 @@ setup(
     author_email='bcollazo2010@gmail.com',
     license='MIT',
     packages=['flush'],
+    install_requires=[
+        'boto3',
+    ],
     entry_points={
         'console_scripts': ['flush=flush.main:main'],
     },

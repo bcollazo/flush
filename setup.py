@@ -11,6 +11,7 @@ setup(
     packages=['flush'],
     install_requires=[
         'boto3',
+        'psycopg2',
     ],
     entry_points={
         'console_scripts': ['flush=flush.main:main'],

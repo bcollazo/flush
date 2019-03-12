@@ -11,6 +11,6 @@ Ensure you are using correct AWS credentials (as if you were using BOTO: https:/
 Then:
 
 ```
-pip install -e .
+pip install flush
 flush postgres://localhost:5432/mydatabase tablename mybucket --truncate
 ```

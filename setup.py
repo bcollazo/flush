@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='flush',
-    version='0.3',
+    version='1.0',
     description='Archive PostgreSQL tables to S3',
     long_description=long_description,
     long_description_content_type='text/markdown',

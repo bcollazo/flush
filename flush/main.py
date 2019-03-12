@@ -11,12 +11,12 @@ MAX_CSV_ROWS = 10000
 DELIMITER = '\t'
 
 
-def flush(bucket, records, now, part_num):
+def flush(bucket, records, tablename, now, part_num):
     """Write CSV and upload to S3"""
     if len(records) == 0:
         return
 
-    key = '{}.{}.tsv'.format(now, part_num)
+    key = '{}/{}.{}.tsv'.format(tablename, now, part_num)
     print('Flushing {} rows to {}'.format(len(records), key))
 
     with io.StringIO() as stream:
@@ -65,13 +65,13 @@ def main():
             while row is not None:
                 accumulated.append(row)
                 if len(accumulated) >= MAX_CSV_ROWS:
-                    flush(bucket, accumulated, now, part_num)
+                    flush(bucket, accumulated, tablename, now, part_num)
                     accumulated = []
                     part_num += 1
 
                 row = cur.fetchone()
 
-            flush(bucket, accumulated, now, part_num)
+            flush(bucket, accumulated, tablename, now, part_num)
 
             if args.truncate:
                 print('TRUNCATE-ing table {}'.format(tablename))

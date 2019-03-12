@@ -1,4 +1,7 @@
-build:
+clean:
+	rm -rf dist/
+
+build: clean
 	python setup.py sdist
 
 publish:

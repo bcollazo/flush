@@ -5,9 +5,10 @@ with open('README.md', 'r') as f:
 
 setup(
     name='flush',
-    version='0.1',
+    version='0.3',
     description='Archive PostgreSQL tables to S3',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='http://github.com/bcollazo/flush',
     author='Bryan Collazo',
     author_email='bcollazo2010@gmail.com',
